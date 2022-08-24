@@ -15,13 +15,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from users.views import ApiEndpoint
+from rest_framework.routers import DefaultRouter
+from snippets.views import SnippetViewset
+from users.views import ApiEndpoint, UserViewset, secret_page
+
+router = DefaultRouter()
+
+router.register("users", UserViewset, basename="user")
+router.register("snippets", SnippetViewset, basename="snippet")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     # This will make available endpoints to authorize, generate token and create OAuth applications.
     path("o/", include("oauth2_provider.urls", namespace="oauth2_provider")),
-
+    # If you're intending to use the browsable API,
+    # you'll probably also want to add REST framework's login and logout views.
+    path("api-auth/", include("rest_framework.urls")),
     # an example resource endpoint
-    path("api/hello", ApiEndpoint.as_view())
+    path("api/hello", ApiEndpoint.as_view()),
+    path("api/secret", secret_page, name="secret"),
 ]
+
+urlpatterns += router.urls

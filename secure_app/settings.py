@@ -41,12 +41,24 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "oauth2_provider",
     "corsheaders",
+    "rest_framework",
     "users",
+    "snippets",
+]
+
+# To enable OAuth2 token authentication you need a middleware
+# that checks for tokens inside requests...
+AUTHENTICATION_BACKENDS = [
+    "oauth2_provider.backends.OAuth2Backend",
+    # Uncomment following if you want to access the admin
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    # ...and a custom authentication backend which takes care of token verification.
+    "oauth2_provider.middleware.OAuth2TokenMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -146,3 +158,18 @@ CORS_ALLOWED_ORIGINS = ["http://django-oauth-toolkit.herokuapp.com"]
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+# DRF settings
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
+    ],
+    # The list views for users and code snippets could end up returning quite
+    # a lot of instances, so really we'd like to make sure we paginate the results,
+    # and allow the API client to step through each of the individual pages.
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+}
