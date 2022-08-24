@@ -14,10 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
+from users.views import ApiEndpoint
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     # This will make available endpoints to authorize, generate token and create OAuth applications.
     path("o/", include("oauth2_provider.urls", namespace="oauth2_provider")),
+
+    # an example resource endpoint
+    path("api/hello", ApiEndpoint.as_view())
 ]
