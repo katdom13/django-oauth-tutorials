@@ -1,11 +1,14 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import Group
 from django.http import HttpResponse
+from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
 from oauth2_provider.views.generic import ProtectedResourceView
-from rest_framework import viewsets
-
-from users.serializers import UserSerializer
+from rest_framework import generics, viewsets
+from rest_framework.permissions import IsAuthenticated
 
 from .models import User
+from .serializers import GroupSerializer, UserSerializer
 
 
 # You have an authorization server and we want it to provide an API
@@ -28,3 +31,15 @@ def secret_page(request, *args, **kwargs):
 class UserViewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, TokenHasReadWriteScope]
+
+    def create(self, request, *args, **kwargs):
+        request.data["password"] = make_password(self.request.data["password"])
+        return super().create(request, *args, **kwargs)
+
+
+class GroupList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated, TokenHasScope]
+    required_scopes = ["groups"]
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer

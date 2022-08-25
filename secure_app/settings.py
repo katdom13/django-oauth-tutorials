@@ -57,12 +57,12 @@ AUTHENTICATION_BACKENDS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    # ...and a custom authentication backend which takes care of token verification.
-    "oauth2_provider.middleware.OAuth2TokenMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # ...and a custom authentication backend which takes care of token verification.
+    "oauth2_provider.middleware.OAuth2TokenMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -165,11 +165,26 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+        "rest_framework.permissions.IsAuthenticated",
     ],
     # The list views for users and code snippets could end up returning quite
     # a lot of instances, so really we'd like to make sure we paginate the results,
     # and allow the API client to step through each of the individual pages.
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
+    # Tell Django REST Framework to use the new authentication backend
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+    ),
+}
+
+# Django oauth toolkit settings
+
+# OAUTH2_PROVIDER.SCOPES setting parameter contains the scopes
+# that the application will be aware of,
+# so we can use them for permission check.
+OAUTH2_PROVIDER = {
+    # The list of available scopes
+    "SCOPES": {"read": "Read scope", "write": "Write scope", "groups": "Access to your groups"}
 }

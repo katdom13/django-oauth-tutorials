@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from snippets.views import SnippetViewset
-from users.views import ApiEndpoint, UserViewset, secret_page
+from users.views import ApiEndpoint, GroupList, UserViewset, secret_page
 
 router = DefaultRouter()
 
@@ -34,6 +34,8 @@ urlpatterns = [
     # an example resource endpoint
     path("api/hello", ApiEndpoint.as_view()),
     path("api/secret", secret_page, name="secret"),
+    # Groups url
+    path("groups/", GroupList.as_view(), name="group-list"),
 ]
 
 urlpatterns += router.urls
