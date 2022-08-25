@@ -7,8 +7,7 @@ from rest_framework.renderers import StaticHTMLRenderer
 from rest_framework.response import Response
 
 from .models import Snippet
-
-# from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly
 from .serializers import SnippetSerializer
 
 
@@ -26,7 +25,7 @@ class SnippetViewset(viewsets.ModelViewSet):
     # The key is setting a class attribute to override the
     # default permissions_classes with something
     # that will use Django OAuth Toolkit's Access Token properly.
-    permission_classes = [TokenHasReadWriteScope]
+    permission_classes = [IsOwnerOrReadOnly, TokenHasReadWriteScope]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
